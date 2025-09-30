@@ -39,13 +39,18 @@
 
     .tab {
       display: none;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
       padding: 1rem;
       max-width: 1200px;
       margin: auto;
     }
 
-    .active {
+    .tab.active {
       display: block;
+      opacity: 1;
+      transform: translateY(0);
     }
 
     .banner {
@@ -72,6 +77,11 @@
       padding: 0.5rem 1rem;
       border-radius: 6px;
       text-decoration: none;
+      transition: background 0.3s;
+    }
+
+    .button-row a:hover {
+      background: #555;
     }
 
     .gallery {
@@ -86,6 +96,7 @@
       background: #ddd;
       height: 200px;
       display: block;
+      cursor: pointer;
     }
 
     footer {
@@ -105,6 +116,32 @@
         height: 150px;
         font-size: 1.2rem;
       }
+    }
+
+    /* Lightbox */
+    #lightbox {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.85);
+      justify-content: center;
+      align-items: center;
+    }
+
+    #lightbox img {
+      max-width: 90%;
+      max-height: 80%;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.6);
+      transform: scale(0.8);
+      opacity: 0;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    #lightbox.show img {
+      transform: scale(1);
+      opacity: 1;
     }
   </style>
 </head>
@@ -126,10 +163,10 @@
     <h2>About Me</h2>
     <p>Hello! This is my art portfolio and archive. Explore my characters and artwork below.</p>
     <div class="button-row">
-      <a href="#">Twitter</a>
-      <a href="#">Instagram</a>
-      <a href="#">DeviantArt</a>
-      <a href="#">Other</a>
+      <a href="https://youtube.com" target="_blank">YouTube</a>
+      <a href="https://twitter.com" target="_blank">Twitter/X</a>
+      <a href="https://discord.com" target="_blank">Discord</a>
+      <a href="https://bsky.app" target="_blank">Bluesky</a>
     </div>
   </section>
 
@@ -138,9 +175,9 @@
     <div class="banner">[ Character Reference Banner ]</div>
     <h2>My Characters</h2>
     <div class="gallery">
-      <div class="placeholder">Character 1</div>
-      <div class="placeholder">Character 2</div>
-      <div class="placeholder">Character 3</div>
+      <div class="placeholder" data-src="https://via.placeholder.com/800x600?text=Character+1">Character 1</div>
+      <div class="placeholder" data-src="https://via.placeholder.com/800x600?text=Character+2">Character 2</div>
+      <div class="placeholder" data-src="https://via.placeholder.com/800x600?text=Character+3">Character 3</div>
     </div>
   </section>
 
@@ -149,10 +186,10 @@
     <div class="banner">[ Featured Artwork Banner ]</div>
     <h2>My Artworks</h2>
     <div class="gallery">
-      <div class="placeholder">Artwork 1</div>
-      <div class="placeholder">Artwork 2</div>
-      <div class="placeholder">Artwork 3</div>
-      <div class="placeholder">Artwork 4</div>
+      <div class="placeholder" data-src="https://via.placeholder.com/800x600?text=Artwork+1">Artwork 1</div>
+      <div class="placeholder" data-src="https://via.placeholder.com/800x600?text=Artwork+2">Artwork 2</div>
+      <div class="placeholder" data-src="https://via.placeholder.com/800x600?text=Artwork+3">Artwork 3</div>
+      <div class="placeholder" data-src="https://via.placeholder.com/800x600?text=Artwork+4">Artwork 4</div>
     </div>
   </section>
 
@@ -160,12 +197,44 @@
     <p>© 2025 Wilxide Studios</p>
   </footer>
 
+  <!-- Lightbox -->
+  <div id="lightbox" onclick="closeLightbox()">
+    <img src="" alt="Expanded artwork">
+  </div>
+
   <script>
+    // Tab switching
     function openTab(tabId) {
       document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
+      const newTab = document.getElementById(tabId);
+      newTab.classList.add('active');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+
+    // Lightbox functions
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = lightbox.querySelector('img');
+
+    function openLightbox(src) {
+      lightboxImg.src = src;
+      lightbox.style.display = 'flex';
+      requestAnimationFrame(() => lightbox.classList.add('show'));
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('show');
+      setTimeout(() => {
+        lightbox.style.display = 'none';
+        lightboxImg.src = '';
+      }, 300);
+    }
+
+    // Add click listeners to gallery items
+    document.querySelectorAll('.gallery img, .gallery .placeholder').forEach(item => {
+      item.addEventListener('click', () => {
+        openLightbox(item.getAttribute('data-src'));
+      });
+    });
   </script>
 </body>
 </html>
